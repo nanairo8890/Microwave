@@ -38,6 +38,6 @@ mkdir -p out
 rm -f "$ZIP"
 (cd "$ST" && zip -qr9 -X "$ZIP" META-INF module.prop customize.sh common.sh post-fs-data.sh \
   post-mount.sh service.sh action.sh webui.sh system.prop sepolicy.rule powerhint-alto.json \
-  powerhint-maximo.json powerhint-custom.tpl custom-values powerhint-rom.json system webroot README.md)
+  powerhint-maximo.json powerhint-custom.tpl custom-values powerhint-rom.json system webroot banner.webp README.md)
 unzip -l "$ZIP" | tail -n +4 | head -n -2
 sha256sum "$ZIP"

@@ -3,4 +3,5 @@ name=Microwave
 version=@VERSION@
 versionCode=@VERSIONCODE@
 author=Nanairo8890
+banner=banner.webp
 description=Nivel: Alto y estable
