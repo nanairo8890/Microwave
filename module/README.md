@@ -28,7 +28,7 @@ estaba.
 - **Perfil térmico de juegos automático.** El perfil normal de Xiaomi limita el núcleo principal a
   2,25 GHz y los grandes a 2,57 GHz desde 25 °C. Con un juego abierto el módulo cambia al perfil de
   juegos y al salir vuelve al normal.
-- **Tres perfiles**, que eliges en el panel web (los dos primeros también con el botón Acción) y se
+- **Tres perfiles**, que eliges en el panel web y se
   aplican al instante sin reiniciar el teléfono:
   - *Alto y estable* (por defecto): sin límite de CPU hasta 45 °C, pisos de 1,56 GHz en los núcleos
     grandes, 1,65 GHz en el principal y 580 MHz en la GPU, y memoria y caché más altas.
@@ -99,7 +99,7 @@ The module does not touch the kernel, partitions or drivers. Uninstalling it put
 - **Automatic gaming thermal profile.** Xiaomi's default profile caps the main core at 2.25 GHz and
   the big cores at 2.57 GHz from 25 °C. With a game open the module switches to the gaming profile
   and restores the default afterwards.
-- **Three profiles**, picked in the WebUI (the first two with the Action button too), applied
+- **Three profiles**, picked in the WebUI, applied
   instantly without a reboot:
   - *High and stable* (default): no CPU cap up to 45 °C, 1.56 GHz floors on the big cores, 1.65 GHz
     on the main core and 580 MHz on the GPU, plus higher memory and cache.

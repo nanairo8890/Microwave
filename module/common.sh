@@ -20,7 +20,7 @@ HAL_NAME=android.hardware.power.IPower/default
 HINTS=/vendor/etc/powerhint.json
 OURS=$MODDIR/system/vendor/etc/powerhint.json   # system/vendor may be a symlink to ../vendor
 ROM_COPY=$MODDIR/powerhint-rom.json             # the ROM's file (sha256 BASE_SHA)
-LEVEL_FILE=$MODDIR/level     # alto | maximo (Action button or WebUI) | custom (WebUI sliders)
+LEVEL_FILE=$MODDIR/level     # alto | maximo | custom, picked in the WebUI
 CUSTOM_VALS=$MODDIR/custom-values   # "KEY default values...": what each slider may be set to
 CUSTOM_SLOTS=7                      # custom profiles: custom-N.conf, "THERMAL PRIME GPU UCLAMP DDR"
 SLOT_FILE=$MODDIR/custom.slot       # which of them the custom level uses
@@ -233,7 +233,7 @@ restart_hal() {
 
 # The chosen level, now, without a reboot: its config goes into the mounted file and only the
 # power HAL restarts. system_server and SurfaceFlinger reconnect to it by themselves, and these
-# configs have no ADPF sessions to lose; the WebUI and the Action button run this while the manager,
+# configs have no ADPF sessions to lose; the WebUI runs this while the manager,
 # not a game, is on screen. Only while the boost works this boot. Returns 0 when the level is active,
 # 1 when it waits for the next boot, 2 when the power HAL rejected it (healed, like at boot).
 apply_level() {

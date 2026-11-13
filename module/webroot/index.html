@@ -786,7 +786,7 @@ body{background:#0b0c0d;font-size:13.5px}
     txt("fHal", s.code === "noconfig" && s.hal === "ok" ? L.hal_pending : (L[HAL_KEYS[s.hal]] || s.hal));
     showHw(s);
     $("pending").hidden = off || !(isLevel(s.active) && s.level !== s.active);
-    /* a level changed elsewhere (the Action button) moves the preview with it */
+    /* a level changed elsewhere moves the preview with it */
     if (!preview || preview === was) preview = saved();
     syncCus(s);
     renderProfile();

@@ -5,7 +5,7 @@ lang_init
 
 [ "$BOOTMODE" = true ] || abort "$(msg '! Instala el módulo desde la app del root (KernelSU/BakaSU), no desde el recovery.' \
                                        '! Install the module from the root manager app (KernelSU/BakaSU), not from recovery.')"
-# The module is made and tested for ksud's boot stages and its Action button and WebUI
+# The module is made and tested for ksud's boot stages and its WebUI
 { [ "$KSU" = true ] && [ "$APATCH" != true ]; } ||
   abort "$(msg '! Solo para KernelSU / BakaSU. Magisk y APatch no son compatibles.' \
                '! For KernelSU / BakaSU only. Magisk and APatch are not supported.')"
@@ -43,7 +43,7 @@ ui_print "$(msg '  o MistOS 5.1 Beta (20261011), con KernelSU/BakaSU.' \
                 '  or MistOS 5.1 Beta (20261011), with KernelSU/BakaSU.')"
 ui_print " "
 
-# An update keeps the level picked with the Action button
+# An update keeps the level picked in the WebUI
 OLD=/data/adb/modules/Microwave
 # The module's id before it was renamed: take its settings over and have the manager remove it on
 # the next boot, so the two never run together
@@ -69,8 +69,8 @@ else
   ui_print "$(msg '    apagado y solo se aplican los ajustes de ART.' \
                   '    off and only the ART settings apply.')"
 fi
-ui_print "$(msg "  Nivel: $(level_name "$(level)"). El botón Acción o el panel web lo cambian al instante." \
-                "  Level: $(level_name "$(level)"). The Action button or the WebUI change it at once.")"
+ui_print "$(msg "  Nivel: $(level_name "$(level)"). El panel web lo cambia al instante." \
+                "  Level: $(level_name "$(level)"). The WebUI changes it at once.")"
 ui_print "$(msg '  En los juegos pone solo el perfil térmico de juegos de Xiaomi: deja apagado' \
                 "  In games it sets Xiaomi's gaming thermal profile by itself: leave")"
 ui_print "$(msg '  "Use thermal profiles" (Configuración > Sistema > Thermal profiles).' \
