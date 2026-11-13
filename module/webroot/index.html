@@ -341,8 +341,8 @@ body{background:#0b0c0d;font-size:13.5px}
   box-shadow:inset 0 1px 3px rgba(0,0,0,.9),0 0 0 1px var(--accent-lo)}
 .key:disabled{box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 0 0 1px #33373a}
 .kgrp{min-width:0}
-.kcell{width:auto;flex:0 1 60px;min-width:42px}
-.kcap{font-size:10px;letter-spacing:0;text-transform:none;overflow-wrap:anywhere}
+.kcell{width:auto;flex:0 1 64px;min-width:54px}
+.kcap{font-size:10px;letter-spacing:0;text-transform:none}
 .btn{border-radius:2px;text-transform:uppercase;letter-spacing:.08em;font-size:11.5px}
 .btn.pri{color:#02181c;border-color:#06363f;background:linear-gradient(180deg,#7be7f7,var(--accent) 58%,var(--accent-lo))}
 .monitor{border-radius:2px;background:#0c0d0e;box-shadow:0 0 0 1px #33373a}
@@ -374,6 +374,7 @@ body{background:#0b0c0d;font-size:13.5px}
 .ckeys .key[aria-checked="true"]{color:var(--accent)}
 .disclaimer{position:relative;z-index:1;max-width:560px;margin:12px auto 0;padding:0 16px;font-size:11px;line-height:1.45;text-align:center;color:#8a9299}
 .rom,.romk{display:none}
+[data-t],#dlgP,#stText,#pDesc,.toast,.pending p{white-space:pre-line}
 .hint{white-space:pre-line;margin:3px 96px 2px 0;font-size:11.5px;line-height:1.4;color:var(--text-3)}
 .ctl-flat+.hint{margin-top:-4px;margin-bottom:8px}
 </style>
@@ -872,7 +873,7 @@ body{background:#0b0c0d;font-size:13.5px}
       txt("sv_" + s.k, shown === null ? L.topVal : shown);
     });
     txt("vSleep", P.sleep ? L.auto : L.off);
-    txt("pMeta", sv ? fmt(L.slot, lv).replace("{n}", lv === "maximo" ? 2 : lv === "custom" ? cslot + 2 : 1) + " · " + (dirty ? L.previewTag : L.savedTag) : "");
+    txt("pMeta", sv ? (lv === "custom" ? L.custom + " " + cslot : fmt(L.slot, lv).replace("{n}", lv === "maximo" ? 2 : 1)) + " · " + (dirty ? L.previewTag : L.savedTag) : "");
     var d = "<b>" + esc(levelName(lv) + colon().replace(/ $/, "")) + "</b> " + esc(lv === "maximo" ? L.maxDesc : lv === "custom" ? L.cusDesc : L.altoDesc);
     html("pDesc", d);
     $("btnApply").disabled = !dirty; cls("cApply", "kcell" + (dirty ? "" : " off"));
@@ -1117,7 +1118,7 @@ body{background:#0b0c0d;font-size:13.5px}
   $("slotAlto").onclick = function () { choose("alto"); };
   $("slotMax").onclick = function () { choose("maximo"); };
   $("ckeys").innerHTML = [1, 2, 3, 4, 5, 6, 7].map(function (i) {
-    return '<button class="key" id="slotC' + i + '" type="button" role="radio" aria-checked="false" disabled>' + (i + 2) + "</button>";
+    return '<button class="key" id="slotC' + i + '" type="button" role="radio" aria-checked="false" disabled>' + i + "</button>";
   }).join("");
   [1, 2, 3, 4, 5, 6, 7].forEach(function (i) {
     $("slotC" + i).onclick = function () {

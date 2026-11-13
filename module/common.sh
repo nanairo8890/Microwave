@@ -347,9 +347,9 @@ state() {
 set_desc() {
   p=$MODDIR/module.prop
   case $(level) in
-    maximo) d=$(msg 'Nivel: Máximo' 'Level: Maximum') ;;
-    custom) d=$(msg "Nivel: Personalizado $(custom_slot)" "Level: Custom $(custom_slot)") ;;
-    *) d=$(msg 'Nivel: Alto y estable' 'Level: High and steady') ;;
+    maximo) d=$(msg 'Perfil: Máximo' 'Profile: Maximum') ;;
+    custom) d=$(msg "Perfil: Personalizado $(custom_slot)" "Profile: Custom $(custom_slot)") ;;
+    *) d=$(msg 'Perfil: Alto y estable' 'Profile: High and steady') ;;
   esac
   if [ "$(state_code)" = active ]; then
     [ "$(level)" = "$(active)" ] || d="$d $(msg '(al reiniciar)' '(after a reboot)')"
