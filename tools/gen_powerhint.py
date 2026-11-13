@@ -230,7 +230,7 @@ def build(base, level, version):
             for n, v in GAME_LOADING.items()]
     cfg["Actions"] = cfg["Actions"] + new
     check(cfg)
-    out = {MARK_KEY: f"mondrian_game_boost {version} {level}"}
+    out = {MARK_KEY: f"Microwave {version} {level}"}
     out.update(cfg)
     return out, len(new)
 
@@ -260,7 +260,7 @@ def main(base_path, out_dir, version):
 
     # The custom level's template and the values each of its tokens may take ("KEY default values...")
     cfg, _ = build(base, "alto", version)
-    cfg[MARK_KEY] = f"mondrian_game_boost {version} custom"
+    cfg[MARK_KEY] = f"Microwave {version} custom"
     lines = []
     for key, name in CUSTOM.items():
         action = next(a for a in cfg["Actions"] if a["PowerHint"] == "GAME" and a.get("Node") == name)

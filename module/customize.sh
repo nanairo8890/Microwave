@@ -44,7 +44,14 @@ ui_print "$(msg '  o MistOS 5.1 Beta (20261011), con KernelSU/BakaSU.' \
 ui_print " "
 
 # An update keeps the level picked with the Action button
-OLD=/data/adb/modules/mondrian_game_boost
+OLD=/data/adb/modules/Microwave
+# The module's id before it was renamed: take its settings over and have the manager remove it on
+# the next boot, so the two never run together
+LEGACY=/data/adb/modules/mondrian_game_boost
+if [ -d "$LEGACY" ]; then
+  [ -d "$OLD" ] || OLD=$LEGACY
+  touch "$LEGACY/remove"
+fi
 [ -f "$OLD/level" ] && cp -f "$OLD/level" "$MODPATH/level"
 for f in "$OLD"/custom-[1-7].conf "$OLD/custom.slot"; do
   [ -f "$f" ] && cp -f "$f" "$MODPATH/"

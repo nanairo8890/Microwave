@@ -59,7 +59,7 @@ El módulo se desactiva solo si algo sale mal, pero si aun así no arranca:
 - **Modo seguro:** presiona bajar volumen 3 veces durante el arranque, después del logo, y borra el
   módulo desde el manager.
 - **Desde el recovery** (OrangeFox, TWRP): crea un archivo vacío
-  `/data/adb/modules/mondrian_game_boost/disable`, o borra esa carpeta, y reinicia.
+  `/data/adb/modules/Microwave/disable`, o borra esa carpeta, y reinicia.
 
 ## Aviso
 
@@ -129,7 +129,7 @@ The module disables itself if something goes wrong, but if it still doesn't boot
 - **Safe mode:** press volume down 3 times during boot, after the logo, then remove the module from
   the manager.
 - **From recovery** (OrangeFox, TWRP): create an empty
-  `/data/adb/modules/mondrian_game_boost/disable` file, or delete that folder, and reboot.
+  `/data/adb/modules/Microwave/disable` file, or delete that folder, and reboot.
 
 ### Disclaimer
 
