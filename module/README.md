@@ -10,13 +10,30 @@ para ver qué está pasando.
 | | |
 | --- | --- |
 | **Dispositivo** | POCO F5 Pro / Redmi K60 (`mondrian`). Ningún otro. |
-| **ROM** | **Project Infinity-X 4.1** (build 17.10.2026, Android 17): probada, boost verificado con un juego. <br> **MistOS 5.1 Beta** (build 20261011, Android 17): mismo `powerhint.json`, no probada. |
 | **Requisito** | KernelSU o un fork (BakaSU, ReSukiSU). |
 | **Android** | 14 o más nuevo. |
 
-En otro teléfono el instalador se niega. En otra ROM el módulo se instala,
-pero el boost queda apagado (solo se aplican los ajustes de ART): compara el `powerhint.json` de la
-ROM, no su nombre, y el panel web avisa si no coincide.
+En otro teléfono el instalador se niega.
+
+### ROMs
+
+El boost depende de que el `/vendor/etc/powerhint.json` de la ROM sea exactamente el que el módulo
+conoce. Compara ese archivo, no el nombre de la ROM ni su kernel.
+
+| ROM | Estado |
+| --- | --- |
+| Project Infinity-X 4.1 (17.10.2026, Android 17) | Funciona: boost verificado con un juego |
+| MistOS 5.1 Beta (20261011, Android 17) | Mismo `powerhint.json`, debería funcionar; no probada |
+| Cualquier otra ROM | Sin verificar |
+
+En una ROM cuyo archivo es distinto el módulo se instala, pero el boost queda apagado y solo se
+aplican los ajustes de ART; el panel web avisa. Para saber si tu ROM coincide, compara este valor
+con el que da tu teléfono:
+
+```
+adb shell su -c "sha256sum /vendor/etc/powerhint.json"
+9b6149a465416e72ba669228c83a52b7c78ca054da9749fdf5b3b2419d76b9f6
+```
 
 El módulo no toca el kernel, las particiones ni los drivers. Si lo desinstalas, todo vuelve a como
 estaba.
@@ -82,13 +99,30 @@ what is going on.
 | | |
 | --- | --- |
 | **Device** | POCO F5 Pro / Redmi K60 (`mondrian`) only. |
-| **ROM** | **Project Infinity-X 4.1** (build 17.10.2026, Android 17): tested, boost verified with a game. <br> **MistOS 5.1 Beta** (build 20261011, Android 17): same `powerhint.json`, not tested. |
 | **Requirement** | KernelSU or a fork (BakaSU, ReSukiSU). |
 | **Android** | 14 or newer. |
 
-On another phone the installer refuses. On another ROM it installs but
-the boost stays off (only the ART settings apply): it compares the ROM's `powerhint.json`, not its
-name, and the WebUI tells you if it doesn't match.
+On another phone the installer refuses.
+
+#### ROMs
+
+The boost needs the ROM's `/vendor/etc/powerhint.json` to be exactly the one the module knows. It
+compares that file, not the ROM's name or its kernel.
+
+| ROM | Status |
+| --- | --- |
+| Project Infinity-X 4.1 (17.10.2026, Android 17) | Works: boost verified with a game |
+| MistOS 5.1 Beta (20261011, Android 17) | Same `powerhint.json`, should work; not tested |
+| Any other ROM | Unverified |
+
+On a ROM with a different file the module installs, but the boost stays off and only the ART
+settings apply; the WebUI tells you. To know whether your ROM matches, compare this value with the
+one your phone gives:
+
+```
+adb shell su -c "sha256sum /vendor/etc/powerhint.json"
+9b6149a465416e72ba669228c83a52b7c78ca054da9749fdf5b3b2419d76b9f6
+```
 
 The module does not touch the kernel, partitions or drivers. Uninstalling it puts everything back.
 
