@@ -11,6 +11,7 @@
 #   webui.sh custom N T P G U D saves the sliders (thermal scene, X2 floor in kHz, GPU floor in Hz,
 #                               uclamp, DDR floor) as custom profile N (1 to 7) and picks it the
 #                               same way; values that are not in custom-values are refused
+#   webui.sh overlay on|off     shows or hides the overlay app's monitor, then prints the status
 #   webui.sh reboot             restarts the phone
 #   webui.sh log                game-boost.log as a JSON string
 MODDIR=${0%/*}
@@ -43,8 +44,13 @@ status() {
   code=$(state_code)
   count=$(printf '%s\n' "$GAME_ROW" | cut -f2 | head -n 1)
   case $count in ''|*[!0-9]*) count=null ;; esac
-  printf '%s\n' "{\"version\":$(js "$(mod_version)"),\"level\":$(js "$(level)"),\"active\":$(js "$(active)"),\"hal\":$(js "$(hal_state)"),\"code\":$(js "$code"),\"ok\":$([ "$code" = active ] && echo true || echo false),\"late\":$(jb hal_late),\"locale\":$(js "$loc"),\"thermalProfiles\":$(jb thermal_profiles_on),\"gameCount\":$count,\"disabled\":$(jb [ -f "$MODDIR/disable" ]),\"slot\":$(custom_slot),\"customs\":[$(customs)],$(hwinfo)}"
+  printf '%s\n' "{\"version\":$(js "$(mod_version)"),\"level\":$(js "$(level)"),\"active\":$(js "$(active)"),\"hal\":$(js "$(hal_state)"),\"code\":$(js "$code"),\"ok\":$([ "$code" = active ] && echo true || echo false),\"late\":$(jb hal_late),\"locale\":$(js "$loc"),\"thermalProfiles\":$(jb thermal_profiles_on),\"gameCount\":$count,\"disabled\":$(jb [ -f "$MODDIR/disable" ]),\"overlay\":$(jb overlay_on),\"overlayApp\":$(jb overlay_app),\"slot\":$(custom_slot),\"customs\":[$(customs)],$(hwinfo)}"
 }
+
+# The overlay app: installed, and its monitor on screen
+OVL=app.microwave.overlay
+overlay_app() { [ -n "$(pm path $OVL 2>/dev/null)" ]; }
+overlay_on() { dumpsys activity services $OVL 2>/dev/null | grep -q 'OverlayService'; }
 
 # The seven custom profiles, each as a JSON array
 customs() {
@@ -166,6 +172,14 @@ case $1 in
       echo "$2" > "$SLOT_FILE"
       echo custom > "$LEVEL_FILE"; apply_level >/dev/null 2>&1; lang_init; set_desc
     fi
+    status ;;
+  overlay)
+    case $2 in
+      on)
+        appops set $OVL SYSTEM_ALERT_WINDOW allow >/dev/null 2>&1
+        am start-foreground-service -n $OVL/.OverlayService >/dev/null 2>&1 ;;
+      off) am stop-service -n $OVL/.OverlayService >/dev/null 2>&1 ;;
+    esac
     status ;;
   log) js "$(cat "$MODDIR/game-boost.log" 2>/dev/null)"; echo ;;
   reboot) svc power reboot 2>/dev/null || reboot ;;

@@ -79,6 +79,19 @@ ui_print "$(msg '  Ajustes de ART de MistOS (heap de 512 MB, JIT, precarga, USAP
                 '  MistOS ART settings (512 MB heap, JIT, readahead, USAP): ready.')"
 ui_print " "
 # Always in English and in capitals, so nobody misses it in the install log
+# The overlay app, streamed to the package manager (it can not read the module's folder itself)
+if [ -f "$MODPATH/MicrowaveOverlay.apk" ]; then
+  if pm install -r -S "$(stat -c %s "$MODPATH/MicrowaveOverlay.apk")" < "$MODPATH/MicrowaveOverlay.apk" >/dev/null 2>&1; then
+    appops set app.microwave.overlay SYSTEM_ALERT_WINDOW allow >/dev/null 2>&1
+    pm grant app.microwave.overlay android.permission.POST_NOTIFICATIONS >/dev/null 2>&1
+    ui_print "$(msg '  Overlay: app instalada. Dale root a "Microwave Overlay" en el manager' \
+                    '  Overlay: app installed. Grant root to "Microwave Overlay" in the manager')"
+    ui_print "$(msg '  y enciéndelo desde el panel web.' '  and turn it on from the WebUI.')"
+  else
+    ui_print "$(msg '  ! Overlay: no se pudo instalar la app.' '  ! Overlay: the app could not be installed.')"
+  fi
+  ui_print " "
+fi
 ui_print "  ============================================"
 ui_print "  DISCLAIMER"
 ui_print "  ============================================"

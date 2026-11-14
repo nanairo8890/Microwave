@@ -11,8 +11,8 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 BASE=ref/powerhint-infinityx-20261017.json
-VERSION=v1.1
-VERSIONCODE=110
+VERSION=v1.2
+VERSIONCODE=120
 ZIP=$PWD/out/Microwave-$VERSION.zip
 
 ST=$(mktemp -d)
@@ -27,6 +27,9 @@ python3 tools/gen_powerhint.py "$BASE" "$ST" "$VERSION"
 mkdir -p "$ST/system/vendor/etc"
 cp "$ST/powerhint-alto.json" "$ST/system/vendor/etc/powerhint.json"
 cp "$BASE" "$ST/powerhint-rom.json"
+# The overlay app (overlay/build.sh makes it; it needs the signing key, so it is built apart)
+APK=
+[ -f out/MicrowaveOverlay.apk ] && { cp out/MicrowaveOverlay.apk "$ST/"; APK=MicrowaveOverlay.apk; }
 
 # The scripts run under busybox ash: LF only and POSIX sh syntax; no placeholders left
 if grep -rlI $'\r' "$ST"; then echo "[!] CRLF in the files above"; exit 1; fi
@@ -38,6 +41,6 @@ mkdir -p out
 rm -f "$ZIP"
 (cd "$ST" && zip -qr9 -X "$ZIP" META-INF module.prop customize.sh common.sh post-fs-data.sh \
   post-mount.sh service.sh webui.sh system.prop sepolicy.rule powerhint-alto.json \
-  powerhint-maximo.json powerhint-custom.tpl custom-values powerhint-rom.json system webroot banner.webp README.md)
+  powerhint-maximo.json powerhint-custom.tpl custom-values powerhint-rom.json system webroot banner.webp uninstall.sh $APK README.md)
 unzip -l "$ZIP" | tail -n +4 | head -n -2
 sha256sum "$ZIP"

@@ -4,6 +4,7 @@
    shows them that way. */
 window.GB_I18N = {
   en: {
+    ovlHint: "Shows FPS, CPU, GPU, memory and temperature over the game\nGrant root to Microwave Overlay in the manager first",
     hThermal: "Body temperature at which the phone starts slowing the CPU down\nHigher: full speed for longer, but hotter",
     hCpu: "Lowest speed the main core may drop to\nHigher: fewer stutters, more heat and battery use",
     hGpu: "Lowest speed of the graphics chip\nHigher: steadier FPS, more heat and battery use",
@@ -126,6 +127,7 @@ window.GB_I18N = {
   },
 
   es: {
+    ovlHint: "Muestra FPS, CPU, GPU, memoria y temperatura encima del juego\nAntes dale root a Microwave Overlay en el manager",
     hThermal: "Temperatura del cuerpo a la que el teléfono empieza a frenar la CPU\nMás alto: rinde a tope por más tiempo, pero calienta más",
     hCpu: "Velocidad mínima a la que puede bajar el núcleo principal\nMás alto: menos tirones, más calor y batería",
     hGpu: "Velocidad mínima del chip gráfico\nMás alto: FPS más estables, más calor y batería",
@@ -245,6 +247,7 @@ window.GB_I18N = {
   },
 
   pt: {
+    ovlHint: "Mostra FPS, CPU, GPU, memória e temperatura sobre o jogo\nAntes, dê root ao Microwave Overlay no gerenciador",
     hThermal: "Temperatura do corpo em que o telefone começa a frear a CPU\nMais alto: rende no máximo por mais tempo, mas esquenta mais",
     hCpu: "Velocidade mínima a que o núcleo principal pode cair\nMais alto: menos travadas, mais calor e bateria",
     hGpu: "Velocidade mínima do chip gráfico\nMais alto: FPS mais estável, mais calor e bateria",
@@ -364,6 +367,7 @@ window.GB_I18N = {
   },
 
   ru: {
+    ovlHint: "Показывает FPS, CPU, GPU, память и температуру поверх игры\nСначала выдайте root приложению Microwave Overlay в менеджере",
     hThermal: "Температура корпуса, при которой телефон начинает замедлять процессор\nВыше: дольше работает на полную, но сильнее греется",
     hCpu: "Минимальная скорость, до которой может опускаться главное ядро\nВыше: меньше рывков, больше нагрева и расхода батареи",
     hGpu: "Минимальная скорость графического чипа\nВыше: стабильнее FPS, больше нагрева и расхода батареи",
@@ -483,6 +487,7 @@ window.GB_I18N = {
   },
 
   fr: {
+    ovlHint: "Affiche FPS, CPU, GPU, mémoire et température par-dessus le jeu\nAccordez d'abord le root à Microwave Overlay dans le gestionnaire",
     hThermal: "Température du châssis à laquelle le téléphone commence à ralentir le CPU\nPlus haut : pleine puissance plus longtemps, mais plus de chaleur",
     hCpu: "Vitesse minimale du cœur principal\nPlus haut : moins de saccades, plus de chaleur et de batterie",
     hGpu: "Vitesse minimale de la puce graphique\nPlus haut : FPS plus stables, plus de chaleur et de batterie",
@@ -602,6 +607,7 @@ window.GB_I18N = {
   },
 
   de: {
+    ovlHint: "Zeigt FPS, CPU, GPU, Speicher und Temperatur über dem Spiel\nGib Microwave Overlay vorher im Manager Root-Zugriff",
     hThermal: "Gehäusetemperatur, ab der das Telefon die CPU bremst\nHöher: länger volle Leistung, aber heißer",
     hCpu: "Niedrigste Geschwindigkeit des Hauptkerns\nHöher: weniger Ruckler, mehr Hitze und Akkuverbrauch",
     hGpu: "Niedrigste Geschwindigkeit des Grafikchips\nHöher: stabilere FPS, mehr Hitze und Akkuverbrauch",
@@ -721,6 +727,7 @@ window.GB_I18N = {
   },
 
   it: {
+    ovlHint: "Mostra FPS, CPU, GPU, memoria e temperatura sopra il gioco\nPrima concedi il root a Microwave Overlay nel manager",
     hThermal: "Temperatura della scocca a cui il telefono inizia a frenare la CPU\nPiù alto: piena potenza più a lungo, ma più calore",
     hCpu: "Velocità minima del core principale\nPiù alto: meno scatti, più calore e batteria",
     hGpu: "Velocità minima del chip grafico\nPiù alto: FPS più stabili, più calore e batteria",
@@ -840,6 +847,7 @@ window.GB_I18N = {
   },
 
   id: {
+    ovlHint: "Menampilkan FPS, CPU, GPU, memori, dan suhu di atas game\nBeri akses root ke Microwave Overlay di manager terlebih dahulu",
     hThermal: "Suhu bodi saat ponsel mulai memperlambat CPU\nLebih tinggi: kecepatan penuh lebih lama, tetapi lebih panas",
     hCpu: "Kecepatan terendah inti utama\nLebih tinggi: lebih sedikit patah-patah, lebih panas dan boros baterai",
     hGpu: "Kecepatan terendah chip grafis\nLebih tinggi: FPS lebih stabil, lebih panas dan boros baterai",
@@ -959,6 +967,7 @@ window.GB_I18N = {
   },
 
   tr: {
+    ovlHint: "FPS, CPU, GPU, bellek ve sıcaklığı oyunun üzerinde gösterir\nÖnce yöneticide Microwave Overlay'e root izni verin",
     hThermal: "Telefonun işlemciyi yavaşlatmaya başladığı gövde sıcaklığı\nDaha yüksek: daha uzun süre tam hız, ama daha sıcak",
     hCpu: "Ana çekirdeğin düşebileceği en düşük hız\nDaha yüksek: daha az takılma, daha fazla ısı ve pil tüketimi",
     hGpu: "Grafik çipinin en düşük hızı\nDaha yüksek: daha dengeli FPS, daha fazla ısı ve pil tüketimi",
@@ -1078,6 +1087,7 @@ window.GB_I18N = {
   },
 
   zh: {
+    ovlHint: "在游戏上方显示帧率、CPU、GPU、内存和温度\n请先在管理器中为 Microwave Overlay 授予 root 权限",
     hThermal: "手机开始给 CPU 降速的机身温度\n越高：满速时间越长，但更热",
     hCpu: "主核心可降到的最低速度\n越高：卡顿更少，发热和耗电更多",
     hGpu: "图形芯片的最低速度\n越高：帧率更稳，发热和耗电更多",
@@ -1197,6 +1207,7 @@ window.GB_I18N = {
   },
 
   uk: {
+    ovlHint: "Показує FPS, CPU, GPU, пам'ять і температуру поверх гри\nСпершу надайте root застосунку Microwave Overlay у менеджері",
     hThermal: "Температура корпусу, за якої телефон починає сповільнювати процесор\nВище: довше працює на повну, але більше гріється",
     hCpu: "Мінімальна швидкість, до якої може опускатися головне ядро\nВище: менше ривків, більше нагріву й витрати батареї",
     hGpu: "Мінімальна швидкість графічного чипа\nВище: стабільніший FPS, більше нагріву й витрати батареї",

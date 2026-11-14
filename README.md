@@ -65,7 +65,7 @@ frecuencias y temperaturas, lo que pone cada nivel y un monitor de hardware de l
 
 ## Instalación
 
-1. Instala `Microwave-v1.1.zip` desde el manager y reinicia.
+1. Instala `Microwave-v1.2.zip` desde el manager y reinicia.
 2. Deja apagado "Use thermal profiles" (Configuración > Sistema > Thermal profiles): el módulo ya
    maneja el perfil térmico en los juegos.
 
@@ -153,7 +153,7 @@ temperatures, what each level sets and a hardware monitor of the last 4 minutes.
 
 ### Install
 
-1. Install `Microwave-v1.1.zip` from the manager and reboot.
+1. Install `Microwave-v1.2.zip` from the manager and reboot.
 2. Leave "Use thermal profiles" (Settings > System > Thermal profiles) off.
 
 ### If the phone doesn't boot

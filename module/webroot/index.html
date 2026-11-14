@@ -377,6 +377,12 @@ body{background:#0b0c0d;font-size:13.5px}
 [data-t],#dlgP,#stText,#pDesc,.toast,.pending p{white-space:pre-line}
 .hint{white-space:pre-line;margin:3px 96px 2px 0;font-size:11.5px;line-height:1.4;color:var(--text-3)}
 .ctl-flat+.hint{margin-top:-4px;margin-bottom:8px}
+/* The overlay app's switch */
+.ovl{margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.05)}
+.ovl-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.ovl-name{font-family:var(--label);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:#d7dcdf}
+.ovl .hint{margin-right:0}
+.btn.on{color:var(--accent);box-shadow:inset 0 1px 3px rgba(0,0,0,.9),0 0 0 1px var(--accent-lo)}
 </style>
 </head>
 <body>
@@ -528,6 +534,10 @@ body{background:#0b0c0d;font-size:13.5px}
       <div class="pending" id="pending" hidden>
         <p data-t="pendingText"></p>
         <button class="btn warn" id="btnReboot" type="button" data-t="reboot"></button>
+      </div>
+      <div class="ovl" id="ovlBox" hidden>
+        <div class="ovl-row"><span class="ovl-name">Overlay</span><button class="btn" id="btnOvl" type="button">–</button></div>
+        <p class="hint" data-t="ovlHint"></p>
       </div>
     </fieldset>
 
@@ -790,6 +800,9 @@ body{background:#0b0c0d;font-size:13.5px}
     /* a level changed elsewhere moves the preview with it */
     if (!preview || preview === was) preview = saved();
     syncCus(s);
+    $("ovlBox").hidden = !s.overlayApp;
+    txt("btnOvl", s.overlay ? L.onState : L.offState);
+    cls("btnOvl", "btn" + (s.overlay ? " on" : ""));
     renderProfile();
     renderTips();
   }
@@ -1148,6 +1161,15 @@ body{background:#0b0c0d;font-size:13.5px}
       }, 80);
     });
   };
+  var ovlBusy = false;
+  $("btnOvl").onclick = function () {
+    if (!st || ovlBusy) return;
+    ovlBusy = true;
+    run(["overlay", st.overlay ? "off" : "on"]).then(function (s) {
+      ovlBusy = false;
+      if (s && typeof s.overlay === "boolean") showStatus(s); else toast(L.error);
+    });
+  };
   $("btnReboot").onclick = function () {
     ask(L.dlgRebootT, L.dlgRebootP, L.yesReboot, "warn").then(function (yes) { if (yes) run(["reboot"]); });
   };
@@ -1157,7 +1179,7 @@ body{background:#0b0c0d;font-size:13.5px}
   });
 
   /* ----- demo data (a normal browser has no ksu bridge) ----- */
-  var demoLevel = "alto", demoActive = "alto", demoSlot = 1, demoCus = [1, 2, 3, 4, 5, 6, 7].map(function () { return [13, 1651200, 580000000, 35, 2092000]; }), demoStat = [912345, 2345, 456789, 8123456, 12345, 23456, 11234, 0];
+  var demoOvl = false, demoLevel = "alto", demoActive = "alto", demoSlot = 1, demoCus = [1, 2, 3, 4, 5, 6, 7].map(function () { return [13, 1651200, 580000000, 35, 2092000]; }), demoStat = [912345, 2345, 456789, 8123456, 12345, 23456, 11234, 0];
   function demoExec(cmd) {
     var t = Date.now() / 1000, game = Math.floor(t / 20) % 2 === 0, w = function (a, b) { return a + (Math.sin(t * b) + 1) / 2; };
     if (/ live$/.test(cmd)) {
@@ -1171,12 +1193,13 @@ body{background:#0b0c0d;font-size:13.5px}
         stat: demoStat.slice(), mem: [11634892, Math.round(game ? 4100000 + 300000 * Math.sin(t / 5) : 6900000)],
         bI: Math.round(game ? 1450000 + 300000 * Math.sin(t * 0.7) : 380000), bV: 4182000, chg: false });
     }
+    var mo = cmd.match(/ overlay (on|off)$/); if (mo) demoOvl = mo[1] === "on";
     var m = cmd.match(/ level (\w+)$/); if (m) demoLevel = demoActive = m[1];
     m = cmd.match(/ custom (\d) ([\d ]+)$/); if (m) { demoLevel = demoActive = "custom"; demoSlot = +m[1]; demoCus[demoSlot - 1] = m[2].split(" ").map(Number); }
     if (/ log$/.test(cmd)) return JSON.stringify("Tue Oct 21 18:00:00 -03 2026\nBoost de juegos activo, nivel alto y estable\nlevel: alto; post-fs-data: alto; power HAL: ok, running\nmounts: 1\nGAME: GAME\t3\t1820450\nsconfig: 0");
     if (/ reboot$/.test(cmd)) return "";
     return JSON.stringify({ version: "v1.0", level: demoLevel, active: demoActive, hal: "ok", code: "active", ok: true, late: false,
-      locale: navigator.language || "en", thermalProfiles: false, gameCount: 3, disabled: false, slot: demoSlot, customs: demoCus,
+      locale: navigator.language || "en", thermalProfiles: false, gameCount: 3, disabled: false, slot: demoSlot, customs: demoCus, overlay: demoOvl, overlayApp: true,
       soc: "SM8475", gpuModel: "Adreno730v3", driver: "V@0615.95" });
   }
 
