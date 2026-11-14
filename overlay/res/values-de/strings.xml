@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="need_perm">Die Berechtigung zum Einblenden über anderen Apps fehlt</string>
+    <string name="grant">Berechtigung erteilen</string>
+    <string name="on_screen">Der Monitor ist auf dem Bildschirm\nZum Verschieben ziehen</string>
+    <string name="turn_off">Ausschalten</string>
+    <string name="hint">Zeigt FPS, CPU, GPU, Speicher und Temperatur über Spielen\nBenötigt Root im Manager</string>
+    <string name="turn_on">Einschalten</string>
+    <string name="opacity">Deckkraft</string>
+    <string name="what_show">Was angezeigt wird</string>
+    <string name="p_mem">GPU-Speicher</string>
+    <string name="p_pwr">Leistung und Temperatur</string>
+    <string name="p_cores">Kernbalken</string>
+    <string name="p_fps_graph">FPS-Diagramm</string>
+    <string name="p_cpu_graph">CPU-Auslastungsdiagramm</string>
+    <string name="notif">Zum Schließen tippen</string>
+    <string name="noroot">Kein Root\nGib Microwave Overlay\nim Manager Root-Zugriff</string>
+</resources>

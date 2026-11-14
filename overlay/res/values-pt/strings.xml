@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="need_perm">Falta a permissão para se sobrepor a outros apps</string>
+    <string name="grant">Conceder permissão</string>
+    <string name="on_screen">O monitor está na tela\nArraste para mover</string>
+    <string name="turn_off">Desligar</string>
+    <string name="hint">Mostra FPS, CPU, GPU, memória e temperatura sobre os jogos\nPrecisa de root no gerenciador</string>
+    <string name="turn_on">Ligar</string>
+    <string name="opacity">Opacidade</string>
+    <string name="what_show">O que mostrar</string>
+    <string name="p_mem">Memória da GPU</string>
+    <string name="p_pwr">Energia e temperatura</string>
+    <string name="p_cores">Barras dos núcleos</string>
+    <string name="p_fps_graph">Gráfico de FPS</string>
+    <string name="p_cpu_graph">Gráfico de uso da CPU</string>
+    <string name="notif">Toque para fechar</string>
+    <string name="noroot">Sem root\nDê root ao Microwave\nOverlay no gerenciador</string>
+</resources>

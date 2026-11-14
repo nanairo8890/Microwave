@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="need_perm">Diğer uygulamaların üzerinde gösterme izni eksik</string>
+    <string name="grant">İzin ver</string>
+    <string name="on_screen">Monitör ekranda\nTaşımak için sürükleyin</string>
+    <string name="turn_off">Kapat</string>
+    <string name="hint">FPS, CPU, GPU, bellek ve sıcaklığı oyunların üzerinde gösterir\nYöneticide root gerekir</string>
+    <string name="turn_on">Aç</string>
+    <string name="opacity">Opaklık</string>
+    <string name="what_show">Gösterilecekler</string>
+    <string name="p_mem">GPU belleği</string>
+    <string name="p_pwr">Güç ve sıcaklık</string>
+    <string name="p_cores">Çekirdek çubukları</string>
+    <string name="p_fps_graph">FPS grafiği</string>
+    <string name="p_cpu_graph">CPU kullanım grafiği</string>
+    <string name="notif">Kapatmak için dokunun</string>
+    <string name="noroot">Root yok\nYöneticide Microwave\nOverlay\'e root verin</string>
+</resources>

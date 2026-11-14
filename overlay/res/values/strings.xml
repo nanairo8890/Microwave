@@ -1,4 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Microwave Overlay</string>
+    <string name="app_name" translatable="false">Microwave Overlay</string>
+    <string name="need_perm">The permission to display over other apps is missing</string>
+    <string name="grant">Grant permission</string>
+    <string name="on_screen">The monitor is on screen\nDrag it to move it</string>
+    <string name="turn_off">Turn off</string>
+    <string name="hint">Shows FPS, CPU, GPU, memory and temperature over games\nIt needs root in the manager</string>
+    <string name="turn_on">Turn on</string>
+    <string name="opacity">Opacity</string>
+    <string name="what_show">What to show</string>
+    <string name="p_mem">GPU memory</string>
+    <string name="p_pwr">Power and temperature</string>
+    <string name="p_cores">Core bars</string>
+    <string name="p_fps_graph">Framerate graph</string>
+    <string name="p_cpu_graph">CPU usage graph</string>
+    <string name="notif">Tap to close it</string>
+    <string name="noroot">No root\nGrant root to Microwave\nOverlay in the manager</string>
 </resources>

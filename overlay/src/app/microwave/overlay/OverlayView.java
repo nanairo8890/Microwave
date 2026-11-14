@@ -126,7 +126,14 @@ final class OverlayView extends View {
         // the rows, the core bars and the graphs with their captions, whichever are on
         float h = rowsEnd() + (on(CORES) ? 14 : 0) + (on(FPS_GRAPH) ? 50 : 0) + (on(CPU_GRAPH) ? 50 : 0) + 8;
         if (notice != null) h = 8 + 16 * 3 + 8;
-        setMeasuredDimension(Math.round((notice != null ? 190 : 292) * d), Math.round(h * d));
+        float w = 292 * d;
+        if (notice != null) {
+            // as wide as its longest line: the translations differ in length
+            w = 0;
+            for (String part : notice.split("\n")) w = Math.max(w, small.measureText(part));
+            w += 18 * d;
+        }
+        setMeasuredDimension(Math.round(w), Math.round(h * d));
     }
 
     /** Text with a black outline under it and a slightly heavier stroke, so it reads over a game. */

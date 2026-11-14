@@ -18,8 +18,6 @@ import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import java.util.Locale;
-
 /**
  * One screen: grants the "display over other apps" permission, turns the monitor on and off, and sets
  * its opacity and which parts it shows.
@@ -28,12 +26,10 @@ public final class MainActivity extends Activity {
 
     private TextView status;
     private Button toggle;
-    private boolean es;
 
     @Override
     protected void onCreate(Bundle state) {
         super.onCreate(state);
-        es = Locale.getDefault().getLanguage().equals("es");
         float d = getResources().getDisplayMetrics().density;
         LinearLayout box = new LinearLayout(this);
         box.setOrientation(LinearLayout.VERTICAL);
@@ -85,7 +81,7 @@ public final class MainActivity extends Activity {
 
         final TextView opacity = heading(box, d);
         int alpha = Math.max(20, Math.min(100, prefs.getInt("alpha", 100)));
-        opacity.setText((es ? "Opacidad  " : "Opacity  ") + alpha + " %");
+        opacity.setText(getString(R.string.opacity) + "  " + alpha + " %");
         SeekBar bar = new SeekBar(this);
         bar.setMin(20);
         bar.setMax(100);
@@ -93,7 +89,7 @@ public final class MainActivity extends Activity {
         bar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar b, int value, boolean fromUser) {
-                opacity.setText((es ? "Opacidad  " : "Opacity  ") + value + " %");
+                opacity.setText(getString(R.string.opacity) + "  " + value + " %");
                 prefs.edit().putInt("alpha", value).apply();
             }
 
@@ -107,12 +103,9 @@ public final class MainActivity extends Activity {
         });
         box.addView(bar, wide);
 
-        heading(box, d).setText(es ? "Qué mostrar" : "What to show");
-        String[] names = es
-                ? new String[]{"GPU", "Memoria de la GPU", "CPU", "RAM", "Energía y temperatura", "FPS",
-                        "Barras de los núcleos", "Gráfico de FPS", "Gráfico de uso de CPU"}
-                : new String[]{"GPU", "GPU memory", "CPU", "RAM", "Power and temperature", "FPS",
-                        "Core bars", "Framerate graph", "CPU usage graph"};
+        heading(box, d).setText(R.string.what_show);
+        String[] names = {"GPU", getString(R.string.p_mem), "CPU", "RAM", getString(R.string.p_pwr), "FPS",
+                getString(R.string.p_cores), getString(R.string.p_fps_graph), getString(R.string.p_cpu_graph)};
         int show = prefs.getInt("show", OverlayView.ALL);
         for (int i = 0; i < names.length; i++) {
             final int bit = 1 << i;
@@ -156,20 +149,14 @@ public final class MainActivity extends Activity {
 
     private void refresh() {
         if (!Settings.canDrawOverlays(this)) {
-            status.setText(es
-                    ? "Falta el permiso para mostrarse sobre otras apps"
-                    : "The permission to display over other apps is missing");
-            toggle.setText(es ? "Dar permiso" : "Grant permission");
+            status.setText(R.string.need_perm);
+            toggle.setText(R.string.grant);
         } else if (OverlayService.running) {
-            status.setText(es
-                    ? "El monitor está en pantalla. Arrástralo para moverlo"
-                    : "The monitor is on screen. Drag it to move it");
-            toggle.setText(es ? "Apagar" : "Turn off");
+            status.setText(R.string.on_screen);
+            toggle.setText(R.string.turn_off);
         } else {
-            status.setText(es
-                    ? "Muestra FPS, CPU, GPU, memoria y temperatura sobre los juegos. Necesita root en el manager"
-                    : "Shows FPS, CPU, GPU, memory and temperature over games. It needs root in the manager");
-            toggle.setText(es ? "Encender" : "Turn on");
+            status.setText(R.string.hint);
+            toggle.setText(R.string.turn_on);
         }
     }
 

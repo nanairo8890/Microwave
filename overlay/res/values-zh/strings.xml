@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="need_perm">缺少“显示在其他应用上层”权限</string>
+    <string name="grant">授予权限</string>
+    <string name="on_screen">监视器已显示在屏幕上\n拖动即可移动</string>
+    <string name="turn_off">关闭</string>
+    <string name="hint">在游戏上方显示帧率、CPU、GPU、内存和温度\n需要在管理器中授予 root 权限</string>
+    <string name="turn_on">开启</string>
+    <string name="opacity">不透明度</string>
+    <string name="what_show">显示内容</string>
+    <string name="p_mem">GPU 内存</string>
+    <string name="p_pwr">功耗和温度</string>
+    <string name="p_cores">核心条</string>
+    <string name="p_fps_graph">帧率图表</string>
+    <string name="p_cpu_graph">CPU 使用率图表</string>
+    <string name="notif">点按即可关闭</string>
+    <string name="noroot">无 root 权限\n请在管理器中为\nMicrowave Overlay 授予 root</string>
+</resources>

@@ -18,7 +18,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 
-import java.util.Locale;
 
 /** Keeps the monitor on screen over other apps. Drag it to move it; its place is remembered. */
 public final class OverlayService extends Service implements Stats.Listener {
@@ -68,11 +67,10 @@ public final class OverlayService extends Service implements Stats.Listener {
         nm.createNotificationChannel(new NotificationChannel("overlay", "Overlay", NotificationManager.IMPORTANCE_LOW));
         PendingIntent stop = PendingIntent.getService(this, 0,
                 new Intent(this, OverlayService.class).setAction(ACTION_STOP), PendingIntent.FLAG_IMMUTABLE);
-        boolean es = Locale.getDefault().getLanguage().equals("es");
         Notification n = new Notification.Builder(this, "overlay")
                 .setSmallIcon(android.R.drawable.ic_menu_view)
                 .setContentTitle("Microwave Overlay")
-                .setContentText(es ? "Toca para cerrarlo" : "Tap to close it")
+                .setContentText(getString(R.string.notif))
                 .setContentIntent(stop)
                 .setOngoing(true)
                 .build();
@@ -180,10 +178,7 @@ public final class OverlayService extends Service implements Stats.Listener {
             @Override
             public void run() {
                 if (view == null) return;
-                boolean es = Locale.getDefault().getLanguage().equals("es");
-                view.showNotice(es
-                        ? "Sin root\nDale root a Microwave\nOverlay en el manager"
-                        : "No root\nGrant root to Microwave\nOverlay in the manager");
+                view.showNotice(getString(R.string.noroot));
                 view.requestLayout();
             }
         });

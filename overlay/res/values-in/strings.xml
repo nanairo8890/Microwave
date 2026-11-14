@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="need_perm">Izin untuk tampil di atas aplikasi lain belum diberikan</string>
+    <string name="grant">Beri izin</string>
+    <string name="on_screen">Monitor sedang tampil di layar\nSeret untuk memindahkannya</string>
+    <string name="turn_off">Matikan</string>
+    <string name="hint">Menampilkan FPS, CPU, GPU, memori, dan suhu di atas game\nMemerlukan root di manager</string>
+    <string name="turn_on">Nyalakan</string>
+    <string name="opacity">Opasitas</string>
+    <string name="what_show">Yang ditampilkan</string>
+    <string name="p_mem">Memori GPU</string>
+    <string name="p_pwr">Daya dan suhu</string>
+    <string name="p_cores">Bilah inti</string>
+    <string name="p_fps_graph">Grafik FPS</string>
+    <string name="p_cpu_graph">Grafik penggunaan CPU</string>
+    <string name="notif">Ketuk untuk menutup</string>
+    <string name="noroot">Tanpa root\nBeri root ke Microwave\nOverlay di manager</string>
+</resources>

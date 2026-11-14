@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="need_perm">Немає дозволу на показ поверх інших застосунків</string>
+    <string name="grant">Надати дозвіл</string>
+    <string name="on_screen">Монітор на екрані\nПеретягніть його, щоб перемістити</string>
+    <string name="turn_off">Вимкнути</string>
+    <string name="hint">Показує FPS, CPU, GPU, пам\'ять і температуру поверх ігор\nПотрібен root у менеджері</string>
+    <string name="turn_on">Увімкнути</string>
+    <string name="opacity">Непрозорість</string>
+    <string name="what_show">Що показувати</string>
+    <string name="p_mem">Пам\'ять GPU</string>
+    <string name="p_pwr">Живлення і температура</string>
+    <string name="p_cores">Смуги ядер</string>
+    <string name="p_fps_graph">Графік FPS</string>
+    <string name="p_cpu_graph">Графік навантаження CPU</string>
+    <string name="notif">Натисніть, щоб закрити</string>
+    <string name="noroot">Немає root\nНадайте root Microwave\nOverlay у менеджері</string>
+</resources>
