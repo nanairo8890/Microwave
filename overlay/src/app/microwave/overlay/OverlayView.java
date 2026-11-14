@@ -10,21 +10,26 @@ import android.view.View;
 
 import java.util.Locale;
 
-/** The monitor itself: readouts, one bar per core and a graph of the last minute. */
+/**
+ * The monitor itself, laid out like a PC on-screen display: a colored label per row, large values
+ * with small units, one bar per core and two graphs of the last minute. No panel behind it; the
+ * text carries its own dark outline so it reads over any game.
+ */
 final class OverlayView extends View {
 
     private static final int HISTORY = 60;
-    private static final int CYAN = 0xFF22D3EE, VIOLET = 0xFFA855F7, TEXT = 0xFFF2F4F5, DIM = 0xFF9AA2A9;
+    private static final int GREEN = 0xFF35C24A, BLUE = 0xFF2F9BFF, ROSE = 0xFFD98A8A;
+    private static final int ORANGE = 0xFFFF9A1F, WHITE = 0xFFFFFFFF, YELLOW = 0xFFE8E04A;
 
     private final float d;
-    private final Paint bg = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private final Paint edge = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint label = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint value = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private final Paint big = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private final Paint bar = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint unit = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint small = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint fill = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint line = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private final RectF box = new RectF();
+    private final Paint box = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final RectF rect = new RectF();
     private final Path path = new Path();
 
     private final float[] fpsHist = new float[HISTORY];
@@ -36,21 +41,23 @@ final class OverlayView extends View {
     OverlayView(Context c) {
         super(c);
         d = c.getResources().getDisplayMetrics().density;
-        bg.setColor(0xCC0B0C0D);
-        edge.setStyle(Paint.Style.STROKE);
-        edge.setStrokeWidth(d);
-        edge.setColor(0x6622D3EE);
-        label.setColor(DIM);
-        label.setTextSize(10 * d);
-        label.setTypeface(Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL));
-        value.setColor(TEXT);
-        value.setTextSize(11.5f * d);
-        value.setTypeface(Typeface.create(Typeface.MONOSPACE, Typeface.BOLD));
-        big.setColor(CYAN);
-        big.setTextSize(22 * d);
-        big.setTypeface(Typeface.create(Typeface.MONOSPACE, Typeface.BOLD));
+        Typeface bold = Typeface.create("sans-serif-condensed", Typeface.BOLD);
+        label.setTypeface(bold);
+        label.setTextSize(19 * d);
+        value.setTypeface(bold);
+        value.setTextSize(19 * d);
+        value.setTextAlign(Paint.Align.RIGHT);
+        unit.setTypeface(bold);
+        unit.setTextSize(9 * d);
+        small.setTypeface(bold);
+        small.setTextSize(10 * d);
+        small.setColor(YELLOW);
+        for (Paint p : new Paint[]{label, value, unit, small}) p.setShadowLayer(2.5f * d, 0, 0, 0xFF000000);
         line.setStyle(Paint.Style.STROKE);
         line.setStrokeWidth(1.5f * d);
+        line.setColor(WHITE);
+        line.setShadowLayer(2 * d, 0, 0, 0xFF000000);
+        box.setColor(0xCC0B0C0D);
     }
 
     void show(Stats.Sample sample) {
@@ -69,91 +76,97 @@ final class OverlayView extends View {
         invalidate();
     }
 
-    private boolean hasGpuMem() {
-        return s != null && s.gpuMemKb > 0;
-    }
-
     @Override
     protected void onMeasure(int widthSpec, int heightSpec) {
-        // rows: FPS, CPU, core bars, GPU, RAM, (GPU memory), temperature, graph
-        float h = 8 + 26 + 16 + 24 + 16 + 16 + (hasGpuMem() ? 16 : 0) + 16 + 40 + 8;
-        if (notice != null) h = 8 + 16 * 3 + 8;
-        setMeasuredDimension(Math.round(172 * d), Math.round(h * d));
+        // five rows, the core bars, two graphs with their captions
+        float h = notice != null ? 8 + 16 * 3 + 8 : 4 + 5 * 23 + 20 + 2 * 50 + 4;
+        setMeasuredDimension(Math.round((notice != null ? 190 : 250) * d), Math.round(h * d));
     }
 
-    private static String pct(float v) {
-        return v < 0 ? "--" : String.format(Locale.US, "%3.0f%%", v);
+    private static String num(float v) {
+        return v < 0 ? "--" : String.format(Locale.US, "%.0f", v);
     }
 
-    private static String deg(float v) {
-        return v < 0 ? "--" : String.format(Locale.US, "%.0f°", v);
+    /** One value of a row: the number right-aligned in its column, the unit raised beside it. */
+    private void cell(Canvas c, int col, float y, String number, String u, int color) {
+        float right = (58 + 44 + col * 66) * d;
+        value.setColor(color);
+        unit.setColor(color);
+        c.drawText(number, right, y, value);
+        c.drawText(u, right + 3 * d, y - 8 * d, unit);
     }
 
-    private void row(Canvas c, float y, String name, String text) {
-        c.drawText(name, 8 * d, y, label);
-        c.drawText(text, 44 * d, y, value);
+    private void name(Canvas c, float y, String text, int color) {
+        label.setColor(color);
+        c.drawText(text, 4 * d, y, label);
     }
 
     @Override
     protected void onDraw(Canvas c) {
         float w = getWidth(), h = getHeight();
-        box.set(d / 2, d / 2, w - d / 2, h - d / 2);
-        c.drawRoundRect(box, 4 * d, 4 * d, bg);
-        c.drawRoundRect(box, 4 * d, 4 * d, edge);
         if (notice != null) {
-            float y = 22 * d;
+            rect.set(0, 0, w, h);
+            c.drawRoundRect(rect, 4 * d, 4 * d, box);
+            small.setColor(WHITE);
+            float ny = 22 * d;
             for (String part : notice.split("\n")) {
-                c.drawText(part, 8 * d, y, value);
-                y += 16 * d;
+                c.drawText(part, 8 * d, ny, small);
+                ny += 16 * d;
             }
+            small.setColor(YELLOW);
             return;
         }
-        if (s == null) {
-            c.drawText("...", 8 * d, 22 * d, value);
-            return;
-        }
-        float y = 30 * d;
-        c.drawText("FPS", 8 * d, y, label);
-        c.drawText(s.fps < 0 ? "--" : String.format(Locale.US, "%.0f", s.fps), 44 * d, y, big);
+        if (s == null) return;
+        float y = 22 * d, step = 23 * d;
 
-        y += 18 * d;
+        name(c, y, "GPU", GREEN);
+        cell(c, 0, y, num(s.tGpu), "°C", ORANGE);
+        cell(c, 1, y, num(s.gpu), "%", ORANGE);
+        cell(c, 2, y, num(s.gpuMhz), "MHz", ORANGE);
+        y += step;
+        name(c, y, "MEM", GREEN);
+        cell(c, 0, y, s.gpuMemKb > 0 ? String.valueOf(s.gpuMemKb / 1024) : "--", "MB", ORANGE);
+        y += step;
         int top = Math.max(s.freqMhz[2], Math.max(s.freqMhz[1], s.freqMhz[0]));
-        row(c, y, "CPU", pct(s.cpu) + (top > 0 ? " " + top + "MHz" : ""));
+        name(c, y, "CPU", BLUE);
+        cell(c, 0, y, num(s.cpu), "%", ORANGE);
+        cell(c, 1, y, num(top), "MHz", ORANGE);
+        cell(c, 2, y, num(s.tCpu), "°C", ORANGE);
+        y += step;
+        name(c, y, "RAM", BLUE);
+        cell(c, 0, y, s.memTotalKb > 0 && s.memAvailKb >= 0 ? String.valueOf((s.memTotalKb - s.memAvailKb) / 1024) : "--", "MB", ORANGE);
+        cell(c, 2, y, num(s.tBody), "°C", ORANGE);
+        y += step;
+        name(c, y, "FPS", ROSE);
+        cell(c, 0, y, num(s.fps), "FPS", WHITE);
+        cell(c, 1, y, s.fps > 0 ? String.format(Locale.US, "%.1f", 1000f / s.fps) : "--", "ms", WHITE);
 
         // one bar per core: 0-3 little, 4-6 big, 7 prime
-        float bw = (w - 16 * d - 7 * 3 * d) / 8, bh = 18 * d, by = y + 6 * d;
+        float by = y + 7 * d, bh = 10 * d, bw = (w - 8 * d - 7 * 3 * d) / 8;
         for (int i = 0; i < 8; i++) {
-            float x = 8 * d + i * (bw + 3 * d);
-            bar.setColor(0x33FFFFFF);
-            c.drawRect(x, by, x + bw, by + bh, bar);
+            float x = 4 * d + i * (bw + 3 * d);
+            fill.setColor(0x66000000);
+            c.drawRect(x, by, x + bw, by + bh, fill);
             float u = s.core[i];
             if (u > 0) {
-                bar.setColor(i == 7 ? VIOLET : CYAN);
-                c.drawRect(x, by + bh * (1 - u / 100f), x + bw, by + bh, bar);
+                fill.setColor(i == 7 ? ORANGE : i >= 4 ? BLUE : GREEN);
+                c.drawRect(x, by + bh * (1 - u / 100f), x + bw, by + bh, fill);
             }
         }
-        y = by + bh + 14 * d;
-        row(c, y, "GPU", pct(s.gpu) + (s.gpuMhz > 0 ? " " + s.gpuMhz + "MHz" : ""));
-        y += 16 * d;
-        row(c, y, "RAM", s.memTotalKb > 0 && s.memAvailKb >= 0
-                ? String.format(Locale.US, "%.1f/%.1f GB", (s.memTotalKb - s.memAvailKb) / 1048576f, s.memTotalKb / 1048576f)
-                : "--");
-        if (hasGpuMem()) {
-            y += 16 * d;
-            row(c, y, "VRAM", String.format(Locale.US, "%d MB", s.gpuMemKb / 1024));
-        }
-        y += 16 * d;
-        row(c, y, "TEMP", deg(s.tCpu) + " cpu " + deg(s.tBody));
-
-        // graph of the last minute: FPS in cyan (0 to 120), CPU use in violet (0 to 100 %)
-        float gt = y + 8 * d, gb = h - 8 * d, gl = 8 * d, gr = w - 8 * d;
-        bar.setColor(0x22FFFFFF);
-        c.drawRect(gl, gt, gr, gb, bar);
-        graph(c, cpuHist, 100, VIOLET, gl, gt, gr, gb);
-        graph(c, fpsHist, 120, CYAN, gl, gt, gr, gb);
+        float gy = by + bh + 4 * d;
+        graph(c, "Framerate", num(s.fps) + " FPS", fpsHist, 120, gy, w);
+        graph(c, "CPU usage", num(s.cpu) + " %", cpuHist, 100, gy + 50 * d, w);
     }
 
-    private void graph(Canvas c, float[] data, float max, int color, float l, float t, float r, float b) {
+    /** A captioned graph of the last minute, 50 dp tall in all. */
+    private void graph(Canvas c, String caption, String now, float[] data, float max, float top, float w) {
+        c.drawText(caption, 4 * d, top + 11 * d, small);
+        small.setTextAlign(Paint.Align.RIGHT);
+        c.drawText(now, w - 4 * d, top + 11 * d, small);
+        small.setTextAlign(Paint.Align.LEFT);
+        float t = top + 15 * d, b = top + 47 * d, l = 4 * d, r = w - 4 * d;
+        fill.setColor(0x40000000);
+        c.drawRect(l, t, r, b, fill);
         path.rewind();
         boolean started = false;
         for (int i = HISTORY - filled; i < HISTORY; i++) {
@@ -167,7 +180,6 @@ final class OverlayView extends View {
                 started = true;
             }
         }
-        line.setColor(color);
         c.drawPath(path, line);
     }
 }

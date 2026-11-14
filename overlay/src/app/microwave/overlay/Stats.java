@@ -30,12 +30,12 @@ final class Stats implements Runnable {
         int gpuMhz = -1;
         long memTotalKb = -1, memAvailKb = -1;
         long gpuMemKb = -1;             // memory the GPU driver has allocated
-        float tCpu = -1, tBody = -1;    // degrees C
+        float tCpu = -1, tGpu = -1, tBody = -1; // degrees C
     }
 
     private static final String INIT =
-            "Z=; for z in /sys/class/thermal/thermal_zone*; do t=; read t < $z/type; "
-            + "case $t in cpu-*|cpuss-*) Z=\"$Z $z/temp\";; esac; done 2>/dev/null\n"
+            "Z=; U=; for z in /sys/class/thermal/thermal_zone*; do t=; read t < $z/type; "
+            + "case $t in cpu-*|cpuss-*) Z=\"$Z $z/temp\";; gpuss-*|gpu-*) U=\"$U $z/temp\";; esac; done 2>/dev/null\n"
             + "K=/sys/class/kgsl/kgsl-3d0; P=/sys/devices/system/cpu/cpufreq\n";
 
     private static final String TICK =
@@ -44,6 +44,7 @@ final class Stats implements Runnable {
             + "echo @G; cat $K/gpu_busy_percentage $K/gpuclk 2>/dev/null; "
             + "echo @M; head -n 3 /proc/meminfo 2>/dev/null; "
             + "echo @T; cat $Z 2>/dev/null; "
+            + "echo @U; cat $U 2>/dev/null; "
             + "echo @B; cat /sys/class/thermal/thermal_message/board_sensor_temp 2>/dev/null; "
             + "echo @S; cat /sys/class/drm/sde-crtc-0/measured_fps 2>/dev/null; "
             + "echo @V; cat /sys/class/kgsl/kgsl/page_alloc 2>/dev/null; "
@@ -115,6 +116,11 @@ final class Stats implements Runnable {
                         case 'T': {
                             float t = num(line) / 1000f;
                             if (t > hottest && t < 200) hottest = t;
+                            break;
+                        }
+                        case 'U': {
+                            float t = num(line) / 1000f;
+                            if (t > s.tGpu && t < 200) s.tGpu = t;
                             break;
                         }
                         case 'B': {
