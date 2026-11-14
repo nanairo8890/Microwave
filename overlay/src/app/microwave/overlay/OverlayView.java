@@ -41,18 +41,25 @@ final class OverlayView extends View {
     OverlayView(Context c) {
         super(c);
         d = c.getResources().getDisplayMetrics().density;
-        Typeface bold = Typeface.create("sans-serif-condensed", Typeface.BOLD);
-        label.setTypeface(bold);
-        label.setTextSize(19 * d);
-        value.setTypeface(bold);
-        value.setTextSize(19 * d);
+        // A wide, squared face like the one PC on-screen displays use (bundled, SIL OFL); the
+        // system's condensed bold if it can not be loaded
+        Typeface face;
+        try {
+            face = Typeface.createFromAsset(c.getAssets(), "michroma.ttf");
+        } catch (RuntimeException e) {
+            face = Typeface.create("sans-serif-condensed", Typeface.BOLD);
+        }
+        label.setTextSize(13 * d);
+        value.setTextSize(13 * d);
         value.setTextAlign(Paint.Align.RIGHT);
-        unit.setTypeface(bold);
-        unit.setTextSize(9 * d);
-        small.setTypeface(bold);
-        small.setTextSize(10 * d);
+        unit.setTextSize(7 * d);
+        small.setTextSize(8.5f * d);
         small.setColor(YELLOW);
-        for (Paint p : new Paint[]{label, value, unit, small}) p.setShadowLayer(2.5f * d, 0, 0, 0xFF000000);
+        for (Paint p : new Paint[]{label, value, unit, small}) {
+            p.setTypeface(face);
+            p.setFakeBoldText(true);
+            p.setStrokeJoin(Paint.Join.ROUND);
+        }
         line.setStyle(Paint.Style.STROKE);
         line.setStrokeWidth(1.5f * d);
         line.setColor(WHITE);
@@ -80,7 +87,20 @@ final class OverlayView extends View {
     protected void onMeasure(int widthSpec, int heightSpec) {
         // five rows, the core bars, two graphs with their captions
         float h = notice != null ? 8 + 16 * 3 + 8 : 4 + 5 * 23 + 20 + 2 * 50 + 4;
-        setMeasuredDimension(Math.round((notice != null ? 190 : 250) * d), Math.round(h * d));
+        setMeasuredDimension(Math.round((notice != null ? 190 : 292) * d), Math.round(h * d));
+    }
+
+    /** Text with a black outline under it and a slightly heavier stroke, so it reads over a game. */
+    private void text(Canvas c, String t, float x, float y, Paint p) {
+        int color = p.getColor();
+        p.setStyle(Paint.Style.STROKE);
+        p.setStrokeWidth(3 * d);
+        p.setColor(0xFF000000);
+        c.drawText(t, x, y, p);
+        p.setStyle(Paint.Style.FILL_AND_STROKE);
+        p.setStrokeWidth(0.6f * d);
+        p.setColor(color);
+        c.drawText(t, x, y, p);
     }
 
     private static String num(float v) {
@@ -89,16 +109,16 @@ final class OverlayView extends View {
 
     /** One value of a row: the number right-aligned in its column, the unit raised beside it. */
     private void cell(Canvas c, int col, float y, String number, String u, int color) {
-        float right = (58 + 44 + col * 66) * d;
+        float right = (56 + 50 + col * 78) * d;
         value.setColor(color);
         unit.setColor(color);
-        c.drawText(number, right, y, value);
-        c.drawText(u, right + 3 * d, y - 8 * d, unit);
+        text(c, number, right, y, value);
+        text(c, u, right + 3 * d, y - 8 * d, unit);
     }
 
     private void name(Canvas c, float y, String text, int color) {
         label.setColor(color);
-        c.drawText(text, 4 * d, y, label);
+        text(c, text, 4 * d, y, label);
     }
 
     @Override
@@ -110,7 +130,7 @@ final class OverlayView extends View {
             small.setColor(WHITE);
             float ny = 22 * d;
             for (String part : notice.split("\n")) {
-                c.drawText(part, 8 * d, ny, small);
+                text(c, part, 8 * d, ny, small);
                 ny += 16 * d;
             }
             small.setColor(YELLOW);
@@ -145,7 +165,7 @@ final class OverlayView extends View {
         float by = y + 7 * d, bh = 10 * d, bw = (w - 8 * d - 7 * 3 * d) / 8;
         for (int i = 0; i < 8; i++) {
             float x = 4 * d + i * (bw + 3 * d);
-            fill.setColor(0x66000000);
+            fill.setColor(0x66808080);
             c.drawRect(x, by, x + bw, by + bh, fill);
             float u = s.core[i];
             if (u > 0) {
@@ -160,9 +180,9 @@ final class OverlayView extends View {
 
     /** A captioned graph of the last minute, 50 dp tall in all. */
     private void graph(Canvas c, String caption, String now, float[] data, float max, float top, float w) {
-        c.drawText(caption, 4 * d, top + 11 * d, small);
+        text(c, caption, 4 * d, top + 11 * d, small);
         small.setTextAlign(Paint.Align.RIGHT);
-        c.drawText(now, w - 4 * d, top + 11 * d, small);
+        text(c, now, w - 4 * d, top + 11 * d, small);
         small.setTextAlign(Paint.Align.LEFT);
         float t = top + 15 * d, b = top + 47 * d, l = 4 * d, r = w - 4 * d;
         fill.setColor(0x40000000);

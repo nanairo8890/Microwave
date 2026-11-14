@@ -22,7 +22,7 @@ rm -rf "$B"
 mkdir -p "$B/gen" "$B/classes" "$B/dex" ../out
 
 "$BT/aapt2" compile --dir res -o "$B/res.zip"
-"$BT/aapt2" link -o "$B/base.apk" -I "$JAR" --manifest AndroidManifest.xml --java "$B/gen" \
+"$BT/aapt2" link -o "$B/base.apk" -I "$JAR" --manifest AndroidManifest.xml -A assets --java "$B/gen" \
   --min-sdk-version 34 --target-sdk-version 35 --version-code $VERSION_CODE --version-name $VERSION_NAME "$B/res.zip"
 javac -nowarn -source 11 -target 11 -cp "$JAR" -d "$B/classes" $(find src "$B/gen" -name '*.java')
 "$BT/d8.bat" --lib "$JAR" --min-api 34 --output "$B/dex" $(find "$B/classes" -name '*.class')
