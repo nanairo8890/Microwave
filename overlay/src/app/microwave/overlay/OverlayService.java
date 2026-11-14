@@ -83,27 +83,55 @@ public final class OverlayService extends Service implements Stats.Listener {
         lp.gravity = Gravity.TOP | Gravity.START;
         lp.x = prefs.getInt("x", 24);
         lp.y = prefs.getInt("y", 160);
+        view.setScale(prefs.getFloat("scale", 1));
+        // One finger drags it; two fingers pinch it smaller or larger, like a photo
         view.setOnTouchListener(new View.OnTouchListener() {
             private float downX, downY;
             private int startX, startY;
+            private boolean pinching;
+            private float pinchDist, pinchScale;
+
+            private float spread(MotionEvent e) {
+                return (float) Math.hypot(e.getRawX(0) - e.getRawX(1), e.getRawY(0) - e.getRawY(1));
+            }
+
+            private void anchor(float x, float y) {
+                downX = x;
+                downY = y;
+                startX = lp.x;
+                startY = lp.y;
+            }
 
             @Override
             public boolean onTouch(View v, MotionEvent e) {
                 switch (e.getActionMasked()) {
                     case MotionEvent.ACTION_DOWN:
-                        downX = e.getRawX();
-                        downY = e.getRawY();
-                        startX = lp.x;
-                        startY = lp.y;
+                        pinching = false;
+                        anchor(e.getRawX(), e.getRawY());
+                        return true;
+                    case MotionEvent.ACTION_POINTER_DOWN:
+                        if (e.getPointerCount() == 2) {
+                            pinching = true;
+                            pinchDist = Math.max(1, spread(e));
+                            pinchScale = view.getScale();
+                        }
                         return true;
                     case MotionEvent.ACTION_MOVE:
-                        lp.x = startX + Math.round(e.getRawX() - downX);
-                        lp.y = startY + Math.round(e.getRawY() - downY);
-                        wm.updateViewLayout(view, lp);
+                        if (pinching && e.getPointerCount() >= 2) {
+                            view.setScale(pinchScale * spread(e) / pinchDist);
+                        } else if (!pinching) {
+                            lp.x = startX + Math.round(e.getRawX() - downX);
+                            lp.y = startY + Math.round(e.getRawY() - downY);
+                            wm.updateViewLayout(view, lp);
+                        }
+                        return true;
+                    case MotionEvent.ACTION_POINTER_UP:
+                        // the pinch is over; the finger that stays does not drag until it is lifted
                         return true;
                     case MotionEvent.ACTION_UP:
                     case MotionEvent.ACTION_CANCEL:
-                        prefs.edit().putInt("x", lp.x).putInt("y", lp.y).apply();
+                        pinching = false;
+                        prefs.edit().putInt("x", lp.x).putInt("y", lp.y).putFloat("scale", view.getScale()).apply();
                         return true;
                     default:
                         return false;

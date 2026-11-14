@@ -21,7 +21,11 @@ final class OverlayView extends View {
     private static final int GREEN = 0xFF35C24A, BLUE = 0xFF2F9BFF, ROSE = 0xFFD98A8A;
     private static final int ORANGE = 0xFFFF9A1F, WHITE = 0xFFFFFFFF, YELLOW = 0xFFE8E04A;
 
-    private final float d;
+    static final float MIN_SCALE = 0.5f, MAX_SCALE = 2.5f;
+
+    private final float density;
+    private float scale = 1;
+    private float d; // one dp at the current scale: every size below is a multiple of it
     private final Paint label = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint value = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint unit = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -40,7 +44,7 @@ final class OverlayView extends View {
 
     OverlayView(Context c) {
         super(c);
-        d = c.getResources().getDisplayMetrics().density;
+        density = c.getResources().getDisplayMetrics().density;
         // A wide, squared face like the one PC on-screen displays use (bundled, SIL OFL); the
         // system's condensed bold if it can not be loaded
         Typeface face;
@@ -49,11 +53,7 @@ final class OverlayView extends View {
         } catch (RuntimeException e) {
             face = Typeface.create("sans-serif-condensed", Typeface.BOLD);
         }
-        label.setTextSize(13 * d);
-        value.setTextSize(13 * d);
         value.setTextAlign(Paint.Align.RIGHT);
-        unit.setTextSize(7 * d);
-        small.setTextSize(8.5f * d);
         small.setColor(YELLOW);
         for (Paint p : new Paint[]{label, value, unit, small}) {
             p.setTypeface(face);
@@ -61,10 +61,27 @@ final class OverlayView extends View {
             p.setStrokeJoin(Paint.Join.ROUND);
         }
         line.setStyle(Paint.Style.STROKE);
-        line.setStrokeWidth(1.5f * d);
         line.setColor(WHITE);
-        line.setShadowLayer(2 * d, 0, 0, 0xFF000000);
         box.setColor(0xCC0B0C0D);
+        setScale(1);
+    }
+
+    float getScale() {
+        return scale;
+    }
+
+    /** Resizes the whole monitor (pinch): 1 is the normal size. */
+    void setScale(float to) {
+        scale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, to));
+        d = density * scale;
+        label.setTextSize(13 * d);
+        value.setTextSize(13 * d);
+        unit.setTextSize(7 * d);
+        small.setTextSize(8.5f * d);
+        line.setStrokeWidth(1.5f * d);
+        line.setShadowLayer(2 * d, 0, 0, 0xFF000000);
+        requestLayout();
+        invalidate();
     }
 
     void show(Stats.Sample sample) {
