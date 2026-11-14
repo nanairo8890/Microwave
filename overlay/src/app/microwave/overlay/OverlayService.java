@@ -31,6 +31,15 @@ public final class OverlayService extends Service implements Stats.Listener {
     private OverlayView view;
     private WindowManager.LayoutParams lp;
     private Stats stats;
+    private SharedPreferences prefs;
+    // The app's opacity slider and switches reach the monitor through the preferences (same process)
+    private final SharedPreferences.OnSharedPreferenceChangeListener onPrefs =
+            new SharedPreferences.OnSharedPreferenceChangeListener() {
+                @Override
+                public void onSharedPreferenceChanged(SharedPreferences p, String key) {
+                    if ("alpha".equals(key) || "show".equals(key)) applyLook();
+                }
+            };
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -73,7 +82,7 @@ public final class OverlayService extends Service implements Stats.Listener {
     private void attach() {
         wm = getSystemService(WindowManager.class);
         view = new OverlayView(this);
-        final SharedPreferences prefs = getSharedPreferences("overlay", MODE_PRIVATE);
+        prefs = getSharedPreferences("overlay", MODE_PRIVATE);
         lp = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
@@ -84,6 +93,8 @@ public final class OverlayService extends Service implements Stats.Listener {
         lp.x = prefs.getInt("x", 24);
         lp.y = prefs.getInt("y", 160);
         view.setScale(prefs.getFloat("scale", 1));
+        applyLook();
+        prefs.registerOnSharedPreferenceChangeListener(onPrefs);
         // One finger drags it; two fingers pinch it smaller or larger, like a photo
         view.setOnTouchListener(new View.OnTouchListener() {
             private float downX, downY;
@@ -144,6 +155,12 @@ public final class OverlayService extends Service implements Stats.Listener {
         new Thread(stats, "stats").start();
     }
 
+    private void applyLook() {
+        if (view == null) return;
+        view.setAlpha(Math.max(20, Math.min(100, prefs.getInt("alpha", 100))) / 100f);
+        view.setShown(prefs.getInt("show", OverlayView.ALL));
+    }
+
     @Override
     public void onSample(final Stats.Sample s) {
         main.post(new Runnable() {
@@ -176,6 +193,7 @@ public final class OverlayService extends Service implements Stats.Listener {
     public void onDestroy() {
         running = false;
         if (stats != null) stats.stop();
+        if (prefs != null) prefs.unregisterOnSharedPreferenceChangeListener(onPrefs);
         if (view != null) {
             try {
                 wm.removeView(view);

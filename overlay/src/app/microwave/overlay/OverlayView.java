@@ -42,6 +42,11 @@ final class OverlayView extends View {
     private Stats.Sample s;
     private String notice;
 
+    /** What the monitor draws; the app's switches set these. */
+    static final int GPU = 1, MEM = 2, CPU = 4, RAM = 8, PWR = 16, FPS = 32, CORES = 64, FPS_GRAPH = 128, CPU_GRAPH = 256;
+    static final int ALL = 511;
+    private int shown = ALL;
+
     OverlayView(Context c) {
         super(c);
         density = c.getResources().getDisplayMetrics().density;
@@ -95,6 +100,22 @@ final class OverlayView extends View {
         invalidate();
     }
 
+    void setShown(int mask) {
+        shown = mask & ALL;
+        requestLayout();
+        invalidate();
+    }
+
+    private boolean on(int part) {
+        return (shown & part) != 0;
+    }
+
+    /** Where the rows end, in dp: the core bars and the graphs go under it. */
+    private float rowsEnd() {
+        int rows = Integer.bitCount(shown & (GPU | MEM | CPU | RAM | PWR | FPS));
+        return rows > 0 ? 22 + (rows - 1) * 23 + 7 : 4;
+    }
+
     void showNotice(String text) {
         notice = text;
         invalidate();
@@ -102,8 +123,9 @@ final class OverlayView extends View {
 
     @Override
     protected void onMeasure(int widthSpec, int heightSpec) {
-        // six rows, the core bars, two graphs with their captions
-        float h = notice != null ? 8 + 16 * 3 + 8 : 4 + 6 * 23 + 20 + 2 * 50 + 4;
+        // the rows, the core bars and the graphs with their captions, whichever are on
+        float h = rowsEnd() + (on(CORES) ? 14 : 0) + (on(FPS_GRAPH) ? 50 : 0) + (on(CPU_GRAPH) ? 50 : 0) + 8;
+        if (notice != null) h = 8 + 16 * 3 + 8;
         setMeasuredDimension(Math.round((notice != null ? 190 : 292) * d), Math.round(h * d));
     }
 
@@ -156,47 +178,65 @@ final class OverlayView extends View {
         if (s == null) return;
         float y = 22 * d, step = 23 * d;
 
-        name(c, y, "GPU", GREEN);
-        cell(c, 0, y, num(s.tGpu), "°C", ORANGE);
-        cell(c, 1, y, num(s.gpu), "%", ORANGE);
-        cell(c, 2, y, num(s.gpuMhz), "MHz", ORANGE);
-        y += step;
-        name(c, y, "MEM", GREEN);
-        cell(c, 0, y, s.gpuMemKb > 0 ? String.valueOf(s.gpuMemKb / 1024) : "--", "MB", ORANGE);
-        y += step;
-        int top = Math.max(s.freqMhz[2], Math.max(s.freqMhz[1], s.freqMhz[0]));
-        name(c, y, "CPU", BLUE);
-        cell(c, 0, y, num(s.cpu), "%", ORANGE);
-        cell(c, 1, y, num(top), "MHz", ORANGE);
-        cell(c, 2, y, num(s.tCpu), "°C", ORANGE);
-        y += step;
-        name(c, y, "RAM", BLUE);
-        cell(c, 0, y, s.memTotalKb > 0 && s.memAvailKb >= 0 ? String.valueOf((s.memTotalKb - s.memAvailKb) / 1024) : "--", "MB", ORANGE);
-        y += step;
-        // what the battery is giving (or taking, while it charges), and the body temperature
-        name(c, y, "PWR", YELLOW);
-        cell(c, 0, y, s.watts < 0 ? "--" : String.format(Locale.US, "%.1f", s.watts), "W", ORANGE);
-        cell(c, 2, y, num(s.tBody), "°C", ORANGE);
-        y += step;
-        name(c, y, "FPS", ROSE);
-        cell(c, 0, y, num(s.fps), "FPS", WHITE);
-        cell(c, 1, y, s.fps > 0 ? String.format(Locale.US, "%.1f", 1000f / s.fps) : "--", "ms", WHITE);
-
-        // one bar per core: 0-3 little, 4-6 big, 7 prime
-        float by = y + 7 * d, bh = 10 * d, bw = (w - 8 * d - 7 * 3 * d) / 8;
-        for (int i = 0; i < 8; i++) {
-            float x = 4 * d + i * (bw + 3 * d);
-            fill.setColor(0x66808080);
-            c.drawRect(x, by, x + bw, by + bh, fill);
-            float u = s.core[i];
-            if (u > 0) {
-                fill.setColor(i == 7 ? ORANGE : i >= 4 ? BLUE : GREEN);
-                c.drawRect(x, by + bh * (1 - u / 100f), x + bw, by + bh, fill);
-            }
+        if (on(GPU)) {
+            name(c, y, "GPU", GREEN);
+            cell(c, 0, y, num(s.tGpu), "°C", ORANGE);
+            cell(c, 1, y, num(s.gpu), "%", ORANGE);
+            cell(c, 2, y, num(s.gpuMhz), "MHz", ORANGE);
+            y += step;
         }
-        float gy = by + bh + 4 * d;
-        graph(c, "Framerate", num(s.fps) + " FPS", fpsHist, 120, gy, w);
-        graph(c, "CPU usage", num(s.cpu) + " %", cpuHist, 100, gy + 50 * d, w);
+        if (on(MEM)) {
+            name(c, y, "MEM", GREEN);
+            cell(c, 0, y, s.gpuMemKb > 0 ? String.valueOf(s.gpuMemKb / 1024) : "--", "MB", ORANGE);
+            y += step;
+        }
+        if (on(CPU)) {
+            int top = Math.max(s.freqMhz[2], Math.max(s.freqMhz[1], s.freqMhz[0]));
+            name(c, y, "CPU", BLUE);
+            cell(c, 0, y, num(s.cpu), "%", ORANGE);
+            cell(c, 1, y, num(top), "MHz", ORANGE);
+            cell(c, 2, y, num(s.tCpu), "°C", ORANGE);
+            y += step;
+        }
+        if (on(RAM)) {
+            name(c, y, "RAM", BLUE);
+            cell(c, 0, y, s.memTotalKb > 0 && s.memAvailKb >= 0 ? String.valueOf((s.memTotalKb - s.memAvailKb) / 1024) : "--", "MB", ORANGE);
+            y += step;
+        }
+        if (on(PWR)) {
+            // what the battery is giving (or taking, while it charges), and the body temperature
+            name(c, y, "PWR", YELLOW);
+            cell(c, 0, y, s.watts < 0 ? "--" : String.format(Locale.US, "%.1f", s.watts), "W", ORANGE);
+            cell(c, 2, y, num(s.tBody), "°C", ORANGE);
+            y += step;
+        }
+        if (on(FPS)) {
+            name(c, y, "FPS", ROSE);
+            cell(c, 0, y, num(s.fps), "FPS", WHITE);
+            cell(c, 1, y, s.fps > 0 ? String.format(Locale.US, "%.1f", 1000f / s.fps) : "--", "ms", WHITE);
+        }
+
+        float gy = rowsEnd() * d;
+        if (on(CORES)) {
+            // one bar per core: 0-3 little, 4-6 big, 7 prime
+            float bh = 10 * d, bw = (w - 8 * d - 7 * 3 * d) / 8;
+            for (int i = 0; i < 8; i++) {
+                float x = 4 * d + i * (bw + 3 * d);
+                fill.setColor(0x66808080);
+                c.drawRect(x, gy, x + bw, gy + bh, fill);
+                float u = s.core[i];
+                if (u > 0) {
+                    fill.setColor(i == 7 ? ORANGE : i >= 4 ? BLUE : GREEN);
+                    c.drawRect(x, gy + bh * (1 - u / 100f), x + bw, gy + bh, fill);
+                }
+            }
+            gy += 14 * d;
+        }
+        if (on(FPS_GRAPH)) {
+            graph(c, "Framerate", num(s.fps) + " FPS", fpsHist, 120, gy, w);
+            gy += 50 * d;
+        }
+        if (on(CPU_GRAPH)) graph(c, "CPU usage", num(s.cpu) + " %", cpuHist, 100, gy, w);
     }
 
     /** A captioned graph of the last minute, 50 dp tall in all. */

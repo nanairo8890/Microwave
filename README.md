@@ -71,6 +71,7 @@ tiempo por fotograma, una barra por núcleo y gráficas del último minuto.
 
 Se enciende y apaga desde el panel web. Antes hay que darle permiso de superusuario a
 "Microwave Overlay" en el manager. Se arrastra con el dedo y recuerda su posición.
+Con dos dedos se achica o agranda. En la app se ajusta su opacidad y se elige qué partes muestra.
 
 ## Instalación
 
@@ -168,6 +169,7 @@ core and graphs of the last minute.
 
 Turn it on and off from the WebUI. Grant superuser to "Microwave Overlay" in the manager first.
 Drag it with a finger; it remembers its place.
+Pinch it with two fingers to resize it. The app sets its opacity and which parts it shows.
 
 ### Install
 
