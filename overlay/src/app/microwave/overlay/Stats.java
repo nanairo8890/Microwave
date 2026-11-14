@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 
 /**
  * Samples the hardware once a second through one root shell that stays open: the files it reads
- * (/proc/stat, the kgsl and thermal nodes) and SurfaceFlinger's frame counter are not readable by
+ * (/proc/stat, the kgsl and thermal nodes, the display driver's frame counter) are not readable by
  * a normal app. Each tick writes one command to the shell and reads its answer up to "@E".
  */
 final class Stats implements Runnable {
@@ -45,11 +45,12 @@ final class Stats implements Runnable {
             + "echo @M; head -n 3 /proc/meminfo 2>/dev/null; "
             + "echo @T; cat $Z 2>/dev/null; "
             + "echo @B; cat /sys/class/thermal/thermal_message/board_sensor_temp 2>/dev/null; "
-            + "echo @S; service call SurfaceFlinger 1013 2>/dev/null; "
+            + "echo @S; cat /sys/class/drm/sde-crtc-0/measured_fps 2>/dev/null; "
             + "echo @V; cat /sys/class/kgsl/kgsl/page_alloc 2>/dev/null; "
             + "echo @E\n";
 
-    private static final Pattern PARCEL = Pattern.compile("Parcel\\(\\s*[0-9a-f]{8}\\s+([0-9a-f]{8})");
+    // "fps: 59.8 duration:1000000 frame_count:60": the frames the display committed since the last read
+    private static final Pattern FPS = Pattern.compile("fps:\\s*([0-9.]+)");
 
     private final Listener listener;
     private volatile boolean running = true;
@@ -58,8 +59,7 @@ final class Stats implements Runnable {
     // previous /proc/stat counters: [0] all cores, [1..8] each core
     private final long[] prevTotal = new long[9];
     private final long[] prevIdle = new long[9];
-    private long prevFrames = -1;
-    private long prevFramesAt;
+    private boolean first = true; // the first reading spans an unknown time
 
     Stats(Listener listener) {
         this.listener = listener;
@@ -179,16 +179,16 @@ final class Stats implements Runnable {
         else s.core[idx - 1] = use < 0 ? 0 : use;
     }
 
-    /** SurfaceFlinger's page flip counter: the frames between two samples give the FPS. */
+    /** The display driver's own measurement (Qualcomm sde): it counts from one read to the next. */
     private void frames(Sample s, String line) {
-        Matcher m = PARCEL.matcher(line);
+        Matcher m = FPS.matcher(line);
         if (!m.find()) return;
-        long frames = Long.parseLong(m.group(1), 16);
-        long now = System.nanoTime();
-        if (prevFrames >= 0 && frames >= prevFrames && now > prevFramesAt) {
-            s.fps = (frames - prevFrames) * 1e9f / (now - prevFramesAt);
+        try {
+            float fps = Float.parseFloat(m.group(1));
+            if (!first) s.fps = fps;
+            first = false;
+        } catch (NumberFormatException e) {
+            // leave it unknown
         }
-        prevFrames = frames;
-        prevFramesAt = now;
     }
 }
