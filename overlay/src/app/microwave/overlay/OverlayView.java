@@ -85,8 +85,8 @@ final class OverlayView extends View {
 
     @Override
     protected void onMeasure(int widthSpec, int heightSpec) {
-        // five rows, the core bars, two graphs with their captions
-        float h = notice != null ? 8 + 16 * 3 + 8 : 4 + 5 * 23 + 20 + 2 * 50 + 4;
+        // six rows, the core bars, two graphs with their captions
+        float h = notice != null ? 8 + 16 * 3 + 8 : 4 + 6 * 23 + 20 + 2 * 50 + 4;
         setMeasuredDimension(Math.round((notice != null ? 190 : 292) * d), Math.round(h * d));
     }
 
@@ -155,6 +155,10 @@ final class OverlayView extends View {
         y += step;
         name(c, y, "RAM", BLUE);
         cell(c, 0, y, s.memTotalKb > 0 && s.memAvailKb >= 0 ? String.valueOf((s.memTotalKb - s.memAvailKb) / 1024) : "--", "MB", ORANGE);
+        y += step;
+        // what the battery is giving (or taking, while it charges), and the body temperature
+        name(c, y, "PWR", YELLOW);
+        cell(c, 0, y, s.watts < 0 ? "--" : String.format(Locale.US, "%.1f", s.watts), "W", ORANGE);
         cell(c, 2, y, num(s.tBody), "°C", ORANGE);
         y += step;
         name(c, y, "FPS", ROSE);

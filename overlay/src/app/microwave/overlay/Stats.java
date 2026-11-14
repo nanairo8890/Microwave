@@ -30,6 +30,7 @@ final class Stats implements Runnable {
         int gpuMhz = -1;
         long memTotalKb = -1, memAvailKb = -1;
         long gpuMemKb = -1;             // memory the GPU driver has allocated
+        float watts = -1;               // battery current times voltage: the whole phone
         float tCpu = -1, tGpu = -1, tBody = -1; // degrees C
     }
 
@@ -48,6 +49,7 @@ final class Stats implements Runnable {
             + "echo @B; cat /sys/class/thermal/thermal_message/board_sensor_temp 2>/dev/null; "
             + "echo @S; cat /sys/class/drm/sde-crtc-0/measured_fps 2>/dev/null; "
             + "echo @V; cat /sys/class/kgsl/kgsl/page_alloc 2>/dev/null; "
+            + "echo @W; cat /sys/class/power_supply/battery/current_now /sys/class/power_supply/battery/voltage_now 2>/dev/null; "
             + "echo @E\n";
 
     // "fps: 59.8 duration:1000000 frame_count:60": the frames the display committed since the last read
@@ -88,6 +90,7 @@ final class Stats implements Runnable {
                 char section = 0;
                 int row = 0;
                 float hottest = -1;
+                long microAmps = -1;
                 String line;
                 boolean ended = false;
                 while ((line = in.readLine()) != null) {
@@ -130,6 +133,11 @@ final class Stats implements Runnable {
                         }
                         case 'S': frames(s, line); break;
                         case 'V': if (row == 0) s.gpuMemKb = num(line) / 1024; break;
+                        case 'W':
+                            // microamps (negative while charging on some kernels), then microvolts
+                            if (row == 0) microAmps = Math.abs(signed(line));
+                            else if (row == 1 && microAmps >= 0) s.watts = microAmps / 1e6f * num(line) / 1e6f;
+                            break;
                         default: break;
                     }
                     row++;
@@ -146,6 +154,14 @@ final class Stats implements Runnable {
         if (running) listener.onNoRoot();
         Process p = shell;
         if (p != null) p.destroy();
+    }
+
+    /** Like num, for a value that may carry a minus sign; 0 if there is no number. */
+    private static long signed(String s) {
+        s = s.trim();
+        boolean neg = s.startsWith("-");
+        long v = num(neg ? s.substring(1) : s);
+        return v < 0 ? 0 : neg ? -v : v;
     }
 
     /** The integer a line starts with (after spaces), or -1. */

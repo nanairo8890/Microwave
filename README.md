@@ -63,6 +63,15 @@ Se abre desde el botón del módulo en el manager (o con KsuWebUI), en el idioma
 (11 idiomas, inglés por defecto). Muestra el estado del boost, procesador, GPU y driver, las
 frecuencias y temperaturas, lo que pone cada nivel y un monitor de hardware de los últimos 4 minutos.
 
+## Overlay
+
+El módulo instala la app **Microwave Overlay**, un monitor que se dibuja encima del juego: uso,
+frecuencia y temperatura de GPU y CPU, memoria de la GPU, RAM, potencia en vatios, FPS con el
+tiempo por fotograma, una barra por núcleo y gráficas del último minuto.
+
+Se enciende y apaga desde el panel web. Antes hay que darle permiso de superusuario a
+"Microwave Overlay" en el manager. Se arrastra con el dedo y recuerda su posición.
+
 ## Instalación
 
 1. Instala `Microwave-v1.2.zip` desde el manager y reinicia.
@@ -150,6 +159,15 @@ The module does not touch the kernel, partitions or drivers. Uninstalling it put
 Opens from the module's button in the manager (or with KsuWebUI), in your phone's language (11
 languages, English by default). It shows the boost state, processor, GPU and driver, clocks and
 temperatures, what each level sets and a hardware monitor of the last 4 minutes.
+
+### Overlay
+
+The module installs the **Microwave Overlay** app, a monitor drawn over the game: GPU and CPU
+usage, clock and temperature, GPU memory, RAM, power in watts, FPS with the frame time, one bar per
+core and graphs of the last minute.
+
+Turn it on and off from the WebUI. Grant superuser to "Microwave Overlay" in the manager first.
+Drag it with a finger; it remembers its place.
 
 ### Install
 
